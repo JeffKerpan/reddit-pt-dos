@@ -1,0 +1,113 @@
+<main class="container">
+  <div class="pull-right">
+    <p><a class="btn btn-info" ng-click="$ctrl.newPost()">New Post</a></p>
+  </div>
+
+  <ul class="nav nav-pills">
+    <li role="presentation" class="active">
+      <input type="search" class="form-control input-sm search-form" placeholder="Filter" ng-model="filterText">
+    </li>
+    <li>
+      <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <a>Sort By {{$ctrl.propertyName}}</a>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a ng-click="$ctrl.sortBy='-votes'" name="propertyName = 'Votes'">Votes</a></li>
+          <li><a ng-click="$ctrl.sortBy='title'" name="propertyName = 'Title'">Title</a></li>
+          <li><a ng-click="$ctrl.sortBy='-date'" name="propertyName = 'Date'">Date</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+
+  <div ng-if="$ctrl.show" class="row">
+    <div class="col-md-8">
+
+      <form ng-submit="$ctrl.createPost()" novalidate name="$ctrl.postForm">
+        <div ng-class="{
+          'has-error' : $ctrl.postForm.title.$invalid
+        }">
+          <label for="title">Title</label>
+          <input id="title" class="form-control" ng-model="$ctrl.post.title" required name="title">
+        </div>
+        <div ng-class="{
+          'has-error' : $ctrl.postForm.body.$invalid
+        }">
+          <label for="body">Body</label>
+          <textarea id="body" class="form-control" ng-model="$ctrl.post.body" required name="body"></textarea>
+        </div>
+        <div ng-class="{
+          'has-error' : $ctrl.postForm.author.$invalid
+        }">
+          <label for="author">Author</label>
+          <input id="author" class="form-control" ng-model="$ctrl.post.author" required name="author">
+        </div>
+        <div ng-class="{
+          'has-error' : $ctrl.postForm.image.$invalid
+        }">
+          <label for="image-url">Image URL</label>
+          <input id="image-url" class="form-control" ng-model="$ctrl.post.image_url" required name="image_url">
+        </div>
+        <div class="form-group">
+          <button ng-disabled="$ctrl.postForm.$invalid" type="submit" class="btn btn-primary">
+            Create Post
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <div class="row" ng-repeat="post in $ctrl.posts | filter: {title: filterText} | orderBy:$ctrl.sortBy">
+    <div class="col-md-12">
+
+      <div class="well">
+        <div class="media-left">
+          <img class="media-object" ng-src="{{post.image_url}}">
+        </div>
+        <div class="media-body">
+          <a ui-sref="edit({id: post.id})">edit</a>
+          <h4 class="media-heading">
+            {{post.title}}
+            |
+            <a><i class="glyphicon glyphicon-arrow-up" ng-click="$ctrl.upVote(post)"></i></a>
+            <a><i class="glyphicon glyphicon-arrow-down"  ng-click="$ctrl.downVote(post)"></i></a>
+            {{post.votes}}
+          </h4>
+          <div class="text-right">
+            {{post.author}}
+          </div>
+          <p>
+            {{post.body}}
+          </p>
+          <div>
+            |
+            <i class="glyphicon glyphicon-comment"></i>
+            <a ng-click="$ctrl.showComments(post)">
+              {{post.comments.length}} Comments
+            </a>
+          </div>
+          <div class="row" ng-if="post.show">
+            <div class="col-md-offset-1">
+              <hr>
+              <p ng-repeat="message in post.comments">
+                {{message.content}} {{message.created_at | date:short}}
+              </p>
+              <form class="form-inline" ng-submit="$ctrl.createComment(post,message); message=''">
+                <div class="form-group">
+                  <input class="form-control" ng-model="message">
+                </div>
+                <div class="form-group">
+                  <input type="submit" class="btn btn-primary">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
