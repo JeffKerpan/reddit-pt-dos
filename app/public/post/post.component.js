@@ -13,6 +13,7 @@
       function controller ($http) {
         const vm = this;
         vm.posts = [];
+        vm.votes = 0;
 
         vm.$onInit = function () {
           vm.show = false;
@@ -33,12 +34,10 @@
         };
 
         vm.createPost = function () {
-          // console.log('SOL');
           $http.post('/api/posts', vm.post).then(function (response) {
             response.data.comments = [];
             vm.posts.push(response.data);
             vm.show = false;
-            console.log(response.data);
           });
           delete vm.post;
         };
@@ -63,12 +62,12 @@
         };
 
         vm.upVote = function (post) {
-          post.votes += 1;
+          post.vote_count += 1;
         };
 
         vm.downVote = function (post) {
-          if(post.votes > 0) {
-            post.votes -= 1;
+          if(post.vote_count > 0) {
+            post.vote_count -= 1;
           }
         };
 
